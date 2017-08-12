@@ -1,0 +1,54 @@
+#include <REGX51.H>
+#include <AT89X51.H>
+
+unsigned char *command_AT = "AT\r";
+unsigned char *command_CMGF = "AT+CMGF=1\r";
+unsigned char *command_CMGS = "AT+CMGS=\"+918962307685\"\r";
+unsigned char *message = "HELLO";
+unsigned char CTRLZ = 0x1A;   
+
+void puts(unsigned char* ptr);
+void putc(unsigned char chr);
+void sendsms(void);
+void initialize();
+
+main()
+{
+ initialize();
+ sendsms();
+ while(1);
+}
+
+void initialize()
+{
+ SCON  = 0x50;   /*SCON: mode 1, 8-bit UART, enable receive      */
+ TMOD |= 0x20;   /*TMOD: timer 1, mode 2, 8-bit                  */
+ TH1   = 0xFD;   /*TH1:  for 9600 baud                           */
+ TR1   = 1;      /*TR1:  timer 1 run                             */ 
+}
+
+void sendsms()
+{
+ puts(command_AT); 
+ puts(command_CMGF); 
+ puts(command_CMGS);
+ puts(message);
+ putc(CTRLZ);
+}
+
+void puts(char* p)
+{
+ char *temp = p;          /*temp pointer so that the actual pointer is not displaced */
+ while(*temp != 0x00)
+ {
+  putc(*temp);  
+  temp++;
+ } 
+}
+
+void putc(unsigned char chr)
+{
+ SBUF = chr;
+ while(TI==0);            /*Wait until the character is completely sent */
+ TI=0;                    /*Reset the flag */
+}

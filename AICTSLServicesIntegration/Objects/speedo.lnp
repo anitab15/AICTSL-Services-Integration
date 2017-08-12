@@ -1,0 +1,3 @@
+".\Objects\speedo.obj" 
+TO ".\Objects\speedo" 
+PRINT(".\Listings\speedo.m51")

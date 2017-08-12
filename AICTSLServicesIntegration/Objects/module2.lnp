@@ -1,0 +1,3 @@
+".\Objects\module2.obj" 
+TO ".\Objects\module2" 
+PRINT(".\Listings\module2.m51")

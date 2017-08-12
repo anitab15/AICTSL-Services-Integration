@@ -1,0 +1,265 @@
+C51 COMPILER V9.54   MODULE1                                                               03/03/2016 13:39:26 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MODULE1
+OBJECT MODULE PLACED IN .\Objects\module1.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE module1.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\m
+                    -odule1.lst) TABS(2) OBJECT(.\Objects\module1.obj)
+
+line level    source
+
+   1          #include<reg51.h>
+   2          sfr l_data=0x90;
+   3          sbit rs=P2^2;
+   4          sbit rw=P2^1;
+   5          sbit e=P2^0;
+   6          sbit ledr=P2^3;
+   7          sbit ledg=P2^4;
+   8          sbit relay=P2^7;
+   9          unsigned char rdata1[12];
+  10          unsigned char rdata2[29]; 
+  11          void cmd(unsigned int value);
+  12          void disp(unsigned int value);
+  13          void delay(unsigned int k);
+  14          void print(unsigned char ch[]);
+  15          void init();
+  16          void srinitialize();
+  17          void start();
+  18          void puts(char* p);
+  19          void putc(unsigned char chr);
+  20          void recieve1();
+  21          void recieve2();
+  22          void main()
+  23          {
+  24   1        int i=0,j=0,k=0;
+  25   1        relay=0;
+  26   1        init();
+  27   1        start();
+  28   1        srinitialize();
+  29   1        delay(4000);
+  30   1        cmd(0x01);
+  31   1        delay(2);
+  32   1        cmd(0x80);
+  33   1        delay(2);
+  34   1        print("AT COMMANDS");
+  35   1        delay(5000);
+  36   1        puts("AT+CIPSHUT\r");
+  37   1        delay(100);
+  38   1        puts("AT+CIPMUX=0\r");
+  39   1        delay(100);
+  40   1        puts("AT+CGATT=1\r");
+  41   1        delay(100);
+  42   1        puts("AT+CSTT=\"TATA.DOCOMO.INTERNET\",\"\",\"\"\r");
+  43   1        delay(100);
+  44   1        puts("AT+CIICR\r");
+  45   1        delay(1000);
+  46   1        puts("AT+CIFSR\r");
+  47   1        delay(100);
+  48   1        puts("AT+SAPBR=1,1\r");
+  49   1        delay(1000);
+  50   1        puts("AT+HTTPINIT\r");
+  51   1        delay(100);
+  52   1       while(1)
+  53   1       {
+  54   2         relay=0;
+C51 COMPILER V9.54   MODULE1                                                               03/03/2016 13:39:26 PAGE 2   
+
+  55   2         ledr=ledg=0;
+  56   2         for(j=0;j<12;j++)
+  57   2         rdata1[j]=0;
+  58   2         for(k=0;k<29;k++)
+  59   2         rdata2[k]=0;
+  60   2         cmd(0x01);
+  61   2         delay(10);
+  62   2         cmd(0x80);
+  63   2         delay(10);
+  64   2         print("SCAN YOUR CARD");
+  65   2         recieve1();
+  66   2         puts("AT+HTTPPARA=\"URL\",\"http://techachiever.com/ibus.php?taid=");
+  67   2         puts(rdata1);
+  68   2         puts("&frm=104&dist=0\"\r");
+  69   2         delay(100);
+  70   2         puts("AT+HTTPACTION=0\r");
+  71   2         cmd(0x01);
+  72   2         delay(10);
+  73   2         cmd(0x80);
+  74   2         delay(10);
+  75   2         print("CARD SCANNED");
+  76   2         delay(2000);
+  77   2         relay=1;
+  78   2         puts("AT+HTTPREAD\r");
+  79   2         recieve2();
+  80   2         if(rdata2[28]==52)
+  81   2         {
+  82   3           ledr=1;
+  83   3           cmd(0x01);
+  84   3           delay(10);
+  85   3           cmd(0x80);
+  86   3           delay(10);
+  87   3           print("INVALID CARD");
+  88   3         }
+  89   2         else if(rdata2[28]==49)
+  90   2         {
+  91   3           ledg=1;
+  92   3           cmd(0x01);
+  93   3           delay(10);
+  94   3           cmd(0x80);
+  95   3           delay(10);
+  96   3           print("WELCOME TO iBUS");
+  97   3          }
+  98   2          else if(rdata2[28]==50)
+  99   2            {
+ 100   3            ledr=1;
+ 101   3            cmd(0x01);
+ 102   3            delay(10);
+ 103   3            cmd(0x80);
+ 104   3            delay(10);
+ 105   3            print("YOU DON'T HAVE");
+ 106   3            delay(10);
+ 107   3            cmd(0xc0);
+ 108   3            delay(10);
+ 109   3            print("ENOUGH BALANCE");
+ 110   3            }
+ 111   2            else if(rdata2[28]==51)
+ 112   2             {
+ 113   3              ledg=1;
+ 114   3              cmd(0x01);
+ 115   3              delay(10);
+ 116   3              cmd(0x80);
+C51 COMPILER V9.54   MODULE1                                                               03/03/2016 13:39:26 PAGE 3   
+
+ 117   3              delay(10);
+ 118   3              print("THANK YOU FOR");
+ 119   3              delay(10);
+ 120   3              cmd(0xc0);
+ 121   3              delay(10);
+ 122   3              print("  USING iBUS ");
+ 123   3              }
+ 124   2              else
+ 125   2              {
+ 126   3              ledr=1; 
+ 127   3              cmd(0x01);
+ 128   3              delay(10);
+ 129   3              cmd(0x80);
+ 130   3              delay(10);
+ 131   3              print("SERVER ERROR");
+ 132   3             }
+ 133   2             delay(1500);
+ 134   2             init();
+ 135   2        }
+ 136   1       }
+ 137          void recieve1()    
+ 138          {
+ 139   1          unsigned char k;
+ 140   1           for(k=0;k<12;k++)
+ 141   1           { 
+ 142   2               while(RI==0); 
+ 143   2                rdata1[k]=SBUF;
+ 144   2                RI=0;
+ 145   2          }
+ 146   1      }
+ 147          void recieve2()    
+ 148          {
+ 149   1          unsigned char k;
+ 150   1           for(k=0;k<29;k++)
+ 151   1           { 
+ 152   2               while(RI==0); 
+ 153   2                rdata2[k]=SBUF;
+ 154   2                RI=0;
+ 155   2          }
+ 156   1      }
+ 157          void puts(char* p)
+ 158          {
+ 159   1       char *temp = p;         
+ 160   1       while(*temp != 0x00)
+ 161   1       {
+ 162   2        putc(*temp);  
+ 163   2        temp++;
+ 164   2       } 
+ 165   1      }
+ 166          
+ 167          void putc(unsigned char chr)
+ 168          {
+ 169   1       SBUF = chr;
+ 170   1       while(TI==0);          
+ 171   1       TI=0;                   
+ 172   1      }
+ 173          void start()
+ 174          {
+ 175   1       cmd(0x80);
+ 176   1       delay(10);
+ 177   1       print("GETTING STARTED");
+ 178   1       cmd(0xc0);
+C51 COMPILER V9.54   MODULE1                                                               03/03/2016 13:39:26 PAGE 4   
+
+ 179   1       delay(10);
+ 180   1       print("GSM TESTING....");
+ 181   1       delay(30);
+ 182   1      }
+ 183          void init()
+ 184          {
+ 185   1       cmd(0x38);
+ 186   1       delay(10);
+ 187   1       cmd(0x01);
+ 188   1       delay(10);
+ 189   1       cmd(0x0e);
+ 190   1       delay(10);
+ 191   1       cmd(0x06);
+ 192   1       delay(10);
+ 193   1      }
+ 194          void srinitialize()
+ 195          {
+ 196   1       SCON  = 0x50;   
+ 197   1       TMOD  = 0x20;  
+ 198   1       TH1   = 0xFD;  
+ 199   1       TR1   = 1;     
+ 200   1      }
+ 201           void print(unsigned char ch[])
+ 202           {
+ 203   1       int i=0;
+ 204   1       while(ch[i]!='\0')
+ 205   1       {
+ 206   2       disp(ch[i]);
+ 207   2       i++;
+ 208   2       }
+ 209   1       }
+ 210           void cmd(unsigned int value)
+ 211           {
+ 212   1        l_data=value;
+ 213   1        rs=0;
+ 214   1        rw=0;
+ 215   1        e=1;
+ 216   1        delay(1);
+ 217   1        e=0;
+ 218   1        }
+ 219            void disp(unsigned int value)
+ 220            {
+ 221   1         l_data=value;
+ 222   1         rs=1;
+ 223   1         rw=0;
+ 224   1         e=1;
+ 225   1         delay(1);
+ 226   1         e=0;       
+ 227   1         }
+ 228             void delay(unsigned int k)
+ 229             {
+ 230   1          unsigned int i,j;
+ 231   1        for(i=0;i<=k;i++)
+ 232   1        for(j=0;j<1275;j++);
+ 233   1        }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    881    ----
+   CONSTANT SIZE    =    400    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V9.54   MODULE1                                                               03/03/2016 13:39:26 PAGE 5   
+
+   DATA SIZE        =     41      14
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

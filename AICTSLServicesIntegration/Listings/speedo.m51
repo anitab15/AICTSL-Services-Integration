@@ -1,0 +1,84 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        02/29/2016  19:44:17  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE .\Objects\speedo.obj TO .\Objects\speedo PRINT (.\Listings\speedo.m51)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\speedo.obj (SPEEDO)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  .\Objects\speedo (SPEEDO)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     0019H     UNIT         ?PR?MAIN?SPEEDO
+            CODE    0819H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\speedo (SPEEDO)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?SPEEDO
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\speedo (SPEEDO)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        SPEEDO
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  C:0800H         PUBLIC        main
+  B:0090H.0       PUBLIC        sw
+  -------         PROC          MAIN
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:0800H         LINE#         3
+  C:0800H         LINE#         4
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/29/2016  19:44:17  PAGE 2
+
+
+  C:0800H         LINE#         5
+  C:0803H         LINE#         6
+  C:0805H         LINE#         7
+  C:0805H         LINE#         8
+  C:0805H         LINE#         9
+  C:0808H         LINE#         10
+  C:0808H         LINE#         11
+  C:080DH         LINE#         12
+  C:0810H         LINE#         13
+  C:0810H         LINE#         14
+  C:0817H         LINE#         15
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        SPEEDO
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0019H BYTE ( 1%) *
+******************************************************************************
+
+Program Size: data=9.0 xdata=0 code=40
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
